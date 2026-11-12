@@ -1,0 +1,49 @@
+{
+  "run": {
+    "id": "demo-gate1",
+    "schema_version": 1,
+    "created_at": "2026-11-12T18:00:00Z",
+    "updated_at": "2026-11-12T18:00:12Z",
+    "status": "awaiting_gate1",
+    "idea_text": "We built a drone that inspects wind-turbine blades with thermal and RGB cameras and detects defects with an on-board AI model, so operators no longer need rope-access teams. We think the market is worth EUR 5 billion.",
+    "context": { "sector": "energy", "region": "EU", "trl": 4 },
+    "scope": {
+      "verdict": "in_scope",
+      "reasons": [
+        "A concrete technology with identifiable B2B customers (wind farm operators and O&M providers)."
+      ],
+      "clarifying_questions": [],
+      "refusal_kind": null
+    },
+    "interpretation": {
+      "summary": "Autonomous drones with thermal and RGB cameras inspect wind-turbine blades and flag defects with an on-board AI model, replacing rope-access inspection teams.",
+      "technology": "Drone-mounted thermal/RGB imaging with on-board defect classification",
+      "trl_guess": 4,
+      "target_customers": [
+        "Wind farm operators",
+        "Independent operations and maintenance (O&M) providers"
+      ],
+      "market_drivers": [
+        "Ageing onshore wind fleet needs more frequent inspection",
+        "Shortage and cost of rope-access technicians",
+        "Pressure to cut turbine downtime"
+      ],
+      "sector": "energy",
+      "region": "EU",
+      "assumptions": [
+        { "id": "c6", "text": "Half of target organisations have both the need and a budget for automated blade inspection.", "driver": "share_need_budget", "included": true },
+        { "id": "c7", "text": "A quarter of target organisations adopt drone-based blade inspection within five years.", "driver": "adoption_rate", "included": true },
+        { "id": "c8", "text": "Customers will pay 50-100% of their current manual inspection spend.", "driver": null, "included": true },
+        { "id": "c9", "text": "We can win about 5% of adopting organisations within five years.", "driver": "achievable_share", "included": true }
+      ]
+    },
+    "assessment": null,
+    "error": null
+  },
+  "steps": [
+    { "id": "st1", "run_id": "demo-gate1", "name": "scoping", "status": "done", "message": "In scope: wind-turbine blade inspection drones", "started_at": "2026-11-12T18:00:00Z", "finished_at": "2026-11-12T18:00:12Z" }
+  ],
+  "sources": [],
+  "claims": [],
+  "experiments": []
+}

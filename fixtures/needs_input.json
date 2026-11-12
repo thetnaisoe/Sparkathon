@@ -1,0 +1,33 @@
+{
+  "run": {
+    "id": "demo-needs-input",
+    "schema_version": 1,
+    "created_at": "2026-11-12T18:10:00Z",
+    "updated_at": "2026-11-12T18:10:08Z",
+    "status": "needs_input",
+    "idea_text": "An AI app for farmers.",
+    "context": { "sector": null, "region": null, "trl": null },
+    "scope": {
+      "verdict": "needs_info",
+      "reasons": [
+        "The idea does not say what the technology does or how it differs from existing farm-management apps.",
+        "No target customer or region is given, so there is no market to size."
+      ],
+      "clarifying_questions": [
+        "What does the technology do, and what is new about it compared with existing farm-management apps?",
+        "Who would pay for it: farmers, cooperatives, or equipment makers?",
+        "Which region should the assessment cover?"
+      ],
+      "refusal_kind": null
+    },
+    "interpretation": null,
+    "assessment": null,
+    "error": null
+  },
+  "steps": [
+    { "id": "st1", "run_id": "demo-needs-input", "name": "scoping", "status": "done", "message": "Needs more information", "started_at": "2026-11-12T18:10:00Z", "finished_at": "2026-11-12T18:10:08Z" }
+  ],
+  "sources": [],
+  "claims": [],
+  "experiments": []
+}
