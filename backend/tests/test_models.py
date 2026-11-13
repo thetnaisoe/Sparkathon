@@ -41,7 +41,7 @@ def load(name: str) -> dict:
 # ------------------------------------------------------------------ fixtures
 
 
-@pytest.mark.parametrize("name", ["gate1.json", "assessment.json", "needs_input.json", "refused.json"])
+@pytest.mark.parametrize("name", ["gate1.json", "assessment.json", "updated.json", "needs_input.json", "refused.json"])
 def test_fixtures_validate(name):
     RunState.model_validate(load(name))
 
@@ -108,7 +108,7 @@ def test_assumption_strength_is_capped():
 
 
 def test_user_figures_are_assumptions():
-    with pytest.raises(ValidationError, match="supplied by the user"):
+    with pytest.raises(ValidationError, match="entered by the user or the team"):
         Claim.model_validate(
             claim(
                 type="fact",
@@ -152,10 +152,10 @@ def test_unknown_claim_reference_in_report_is_rejected():
         RunState.model_validate(data)
 
 
-def test_experiment_must_target_an_assumption():
+def test_experiment_must_target_a_share_driver():
     data = load("assessment.json")
     data["experiments"][0]["assumption_id"] = "c1"  # a fact
-    with pytest.raises(ValidationError, match="target an assumption"):
+    with pytest.raises(ValidationError, match="must test a share driver"):
         RunState.model_validate(data)
 
 

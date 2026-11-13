@@ -1,13 +1,13 @@
 // Typed client for the Lab-to-Market backend. Written by Dev B; types come from ./contract.
 // Only change the two constants below.
-import type { ApproveRequest, EvalResult, RunCreate, RunCreated, RunState } from "./contract";
+import type { ApproveRequest, EvalResult, ResultCreate, RunCreate, RunCreated, RunState } from "./contract";
 import { FIXTURES } from "./fixtures";
 
-/** Backend URL. Dev B sends it after deploy. No trailing slash. */
-export const API_BASE_URL = "https://REPLACE-ME.onrender.com";
+/** Backend URL. No trailing slash. */
+export const API_BASE_URL = "https://lab2market-api.onrender.com";
 
 /** true = serve the demo runs from ./fixtures without calling the backend. */
-export const USE_FIXTURES = true;
+export const USE_FIXTURES = false;
 
 export class ApiError extends Error {
   constructor(
@@ -29,7 +29,14 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     throw new ApiError(0, "Cannot reach the backend. It may be waking up; try again in a minute.");
   }
   if (!response.ok) {
-    throw new ApiError(response.status, await response.text());
+    let detail = await response.text();
+    try {
+      const parsed = JSON.parse(detail) as { detail?: unknown };
+      if (typeof parsed.detail === "string") detail = parsed.detail;
+    } catch {
+      // keep the raw text
+    }
+    throw new ApiError(response.status, detail);
   }
   return (await response.json()) as T;
 }
@@ -40,25 +47,33 @@ function fixture(runId: string): RunState {
   return state;
 }
 
+const post = (body: unknown): RequestInit => ({ method: "POST", body: JSON.stringify(body) });
+
 export const api = {
-  health: () => request<{ status: string; schema_version: number; mode: string }>("/health"),
+  health: () =>
+    request<{ status: string; schema_version: number; llm_configured: boolean; search_configured: boolean }>(
+      "/health",
+    ),
 
   createRun: async (body: RunCreate): Promise<RunCreated> =>
-    USE_FIXTURES
-      ? { run_id: "demo-gate1", status: "awaiting_gate1" }
-      : request<RunCreated>("/runs", { method: "POST", body: JSON.stringify(body) }),
+    USE_FIXTURES ? { run_id: "demo-gate1", status: "awaiting_gate1" } : request<RunCreated>("/runs", post(body)),
 
   getRun: async (runId: string): Promise<RunState> =>
     USE_FIXTURES ? fixture(runId) : request<RunState>(`/runs/${encodeURIComponent(runId)}`),
 
-  approve: async (runId: string, body: ApproveRequest): Promise<{ ok: boolean }> =>
-    USE_FIXTURES
-      ? { ok: true }
-      : request<{ ok: boolean }>(`/runs/${encodeURIComponent(runId)}/approve`, {
-          method: "POST",
-          body: JSON.stringify(body),
-        }),
+  /** Gate 1 or Gate 2. Returns the updated run. 409 = wrong status or missing decisions (see error.detail). */
+  approve: async (runId: string, body: ApproveRequest): Promise<RunState> =>
+    USE_FIXTURES ? fixture(runId) : request<RunState>(`/runs/${encodeURIComponent(runId)}/approve`, post(body)),
 
-  latestEvals: async (): Promise<EvalResult[]> =>
-    USE_FIXTURES ? [] : request<EvalResult[]>("/evals/latest"),
+  /** Enter an experiment result (only after Gate 2). Returns the updated run with a new entry in `updates`. */
+  addResult: async (runId: string, body: ResultCreate): Promise<RunState> =>
+    USE_FIXTURES
+      ? fixture("demo-updated")
+      : request<RunState>(`/runs/${encodeURIComponent(runId)}/results`, post(body)),
+
+  /** Put the demo runs back to their starting state. */
+  resetDemo: async (): Promise<{ reset: string[] }> =>
+    USE_FIXTURES ? { reset: Object.keys(FIXTURES) } : request<{ reset: string[] }>("/demo/reset", post({})),
+
+  latestEvals: async (): Promise<EvalResult[]> => (USE_FIXTURES ? [] : request<EvalResult[]>("/evals/latest")),
 };

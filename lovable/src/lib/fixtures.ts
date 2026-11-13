@@ -6,7 +6,7 @@ export const FIXTURES: Record<string, RunState> = {
   "demo-gate1": {
     "run": {
       "id": "demo-gate1",
-      "schema_version": 1,
+      "schema_version": 2,
       "created_at": "2026-11-12T18:00:00Z",
       "updated_at": "2026-11-12T18:00:12Z",
       "status": "awaiting_gate1",
@@ -41,28 +41,54 @@ export const FIXTURES: Record<string, RunState> = {
         "region": "EU",
         "assumptions": [
           {
-            "id": "c6",
-            "text": "Half of target organisations have both the need and a budget for automated blade inspection.",
+            "id": "a1",
+            "text": "Wind farm operators and independent O&M providers in the EU",
+            "driver": "n_target_orgs",
+            "included": true,
+            "unit": "organisations",
+            "p10": 1200.0,
+            "p50": 2000.0,
+            "p90": 3000.0
+          },
+          {
+            "id": "a2",
+            "text": "Share of them with both the need and a budget for automated blade inspection",
             "driver": "share_need_budget",
-            "included": true
+            "included": true,
+            "unit": "share",
+            "p10": 0.3,
+            "p50": 0.5,
+            "p90": 0.7
           },
           {
-            "id": "c7",
-            "text": "A quarter of target organisations adopt drone-based blade inspection within five years.",
+            "id": "a3",
+            "text": "Share adopting drone-based blade inspection within five years",
             "driver": "adoption_rate",
-            "included": true
+            "included": true,
+            "unit": "share",
+            "p10": 0.1,
+            "p50": 0.25,
+            "p90": 0.45
           },
           {
-            "id": "c8",
-            "text": "Customers will pay 50-100% of their current manual inspection spend.",
-            "driver": null,
-            "included": true
+            "id": "a4",
+            "text": "Annual price per organisation",
+            "driver": "price_per_org",
+            "included": true,
+            "unit": "EUR per organisation per year",
+            "p10": 8000.0,
+            "p50": 20000.0,
+            "p90": 45000.0
           },
           {
-            "id": "c9",
-            "text": "We can win about 5% of adopting organisations within five years.",
+            "id": "a5",
+            "text": "Share of adopting organisations we can win within five years",
             "driver": "achievable_share",
-            "included": true
+            "included": true,
+            "unit": "share",
+            "p10": 0.02,
+            "p50": 0.05,
+            "p90": 0.1
           }
         ]
       },
@@ -82,12 +108,13 @@ export const FIXTURES: Record<string, RunState> = {
     ],
     "sources": [],
     "claims": [],
-    "experiments": []
+    "experiments": [],
+    "updates": []
   },
   "demo-success": {
     "run": {
       "id": "demo-success",
-      "schema_version": 1,
+      "schema_version": 2,
       "created_at": "2026-11-12T18:00:00Z",
       "updated_at": "2026-11-12T18:03:40Z",
       "status": "awaiting_gate2",
@@ -122,28 +149,54 @@ export const FIXTURES: Record<string, RunState> = {
         "region": "EU",
         "assumptions": [
           {
-            "id": "c6",
-            "text": "Half of target organisations have both the need and a budget for automated blade inspection.",
+            "id": "a1",
+            "text": "Wind farm operators and independent O&M providers in the EU",
+            "driver": "n_target_orgs",
+            "included": true,
+            "unit": "organisations",
+            "p10": 1200.0,
+            "p50": 2000.0,
+            "p90": 3000.0
+          },
+          {
+            "id": "a2",
+            "text": "Share of them with both the need and a budget for automated blade inspection",
             "driver": "share_need_budget",
-            "included": true
+            "included": true,
+            "unit": "share",
+            "p10": 0.3,
+            "p50": 0.5,
+            "p90": 0.7
           },
           {
-            "id": "c7",
-            "text": "A quarter of target organisations adopt drone-based blade inspection within five years.",
+            "id": "a3",
+            "text": "Share adopting drone-based blade inspection within five years",
             "driver": "adoption_rate",
-            "included": true
+            "included": true,
+            "unit": "share",
+            "p10": 0.1,
+            "p50": 0.25,
+            "p90": 0.45
           },
           {
-            "id": "c8",
-            "text": "Customers will pay 50-100% of their current manual inspection spend.",
-            "driver": null,
-            "included": true
+            "id": "a4",
+            "text": "Annual price per organisation",
+            "driver": "price_per_org",
+            "included": true,
+            "unit": "EUR per organisation per year",
+            "p10": 8000.0,
+            "p50": 20000.0,
+            "p90": 45000.0
           },
           {
-            "id": "c9",
-            "text": "We can win about 5% of adopting organisations within five years.",
+            "id": "a5",
+            "text": "Share of adopting organisations we can win within five years",
             "driver": "achievable_share",
-            "included": true
+            "included": true,
+            "unit": "share",
+            "p10": 0.02,
+            "p50": 0.05,
+            "p90": 0.1
           }
         ]
       },
@@ -159,59 +212,77 @@ export const FIXTURES: Record<string, RunState> = {
             {
               "driver": "achievable_share",
               "claim_id": "c9",
-              "low_output": 100000.0,
-              "high_output": 500000.0,
-              "swing": 400000.0
+              "low_output": 37426.538707254855,
+              "high_output": 613510.5954210712,
+              "swing": 576084.0567138164
             },
             {
               "driver": "adoption_rate",
               "claim_id": "c7",
-              "low_output": 100000.0,
-              "high_output": 450000.0,
-              "swing": 350000.0
+              "low_output": 84169.72980896874,
+              "high_output": 378414.4446728482,
+              "swing": 294244.7148638795
             },
             {
               "driver": "price_per_org",
               "claim_id": "c5",
-              "low_output": 150000.0,
-              "high_output": 450000.0,
-              "swing": 300000.0
+              "low_output": 124244.44804953631,
+              "high_output": 372733.344148609,
+              "swing": 248488.89609907265
             },
             {
               "driver": "share_need_budget",
               "claim_id": "c6",
-              "low_output": 150000.0,
-              "high_output": 350000.0,
-              "swing": 200000.0
+              "low_output": 124244.45020117897,
+              "high_output": 289903.7094319831,
+              "swing": 165659.25923080416
             },
             {
               "driver": "n_target_orgs",
               "claim_id": "c4",
-              "low_output": 187500.0,
-              "high_output": 325000.0,
-              "swing": 137500.0
+              "low_output": 155305.5600619204,
+              "high_output": 269196.3041073287,
+              "swing": 113890.7440454083
             }
           ],
           "top_down_check": {
             "claim_id": "c10",
             "top_down_value": 5000000000.0,
-            "bottom_up_value": 20000000.0,
-            "ratio": 250.0,
-            "note": "The user's market figure is 250 times the bottom-up serviceable market. It stays a user-supplied assumption and is not used in the model."
+            "bottom_up_value": 20000000.229712423,
+            "ratio": 249.99999712859474,
+            "note": "The figure in the idea is 250 times the bottom-up serviceable market (target organisations × share with need and budget × annual price). It stays a user-supplied assumption and is not used in the model."
           }
+        },
+        "decision": {
+          "verdict": "continue",
+          "provisional": true,
+          "reasons": [
+            "Chance of reaching €150k a year: 54% (the rule fixed in advance needs at least 50% to continue).",
+            "Provisional: no experiment results yet, so this rests on assumptions."
+          ],
+          "viability_threshold": 150000.0,
+          "p_viable": 0.5422
         },
         "sections": [
           {
-            "title": "Bottom line",
-            "body": "A plausible niche business, not yet a large one. Obtainable annual revenue in year five is {{c11}}, driven mostly by the share of customers we can win ({{c9}}) and how fast the market adopts drone inspection ({{c7}}). The market figure in the idea ({{c10}}) is far above what the bottom-up model supports."
+            "title": "Verdict",
+            "body": "Continue: no rule fixed in advance has failed, and the model clears the viability threshold. This is provisional, because nothing has been tested yet. Obtainable annual revenue in year five is {{c11}}. The answer moves most with {{c9}} and {{c7}}."
           },
           {
             "title": "Market model",
-            "body": "Target organisations: {{c4}}, based on {{c1}}. Annual price per organisation: {{c5}}, derived from today's manual inspection cost ({{c2}}), portfolio size ({{c3}}) and willingness to pay ({{c8}})."
+            "body": "Target organisations {{c4}}; share with need and budget {{c6}}; adoption within five years {{c7}}; share we can win {{c9}}; annual price per organisation {{c5}}. Verified facts behind the model: {{c1}}, {{c2}} and {{c3}}."
           },
           {
             "title": "Weakest assumptions",
-            "body": "Achievable share ({{c9}}) and willingness to pay ({{c8}}) rest on no external evidence. They become the first experiments."
+            "body": "{{c9}}, {{c5}} and {{c7}} combine the most influence with the least evidence, so they are the first to test."
+          },
+          {
+            "title": "What would change our mind",
+            "body": "Customer interviews on {{c7}}: if it fails its rule, the verdict becomes kill. Letter-of-intent request on {{c9}}: if it fails its rule, the verdict becomes kill. Customer interviews on {{c6}}: if it fails its rule, the verdict becomes pivot."
+          },
+          {
+            "title": "Top-down cross-check",
+            "body": "The figure in the idea ({{c10}}) is far above what the bottom-up model supports. It is kept as a user-supplied assumption and does not enter the model."
           }
         ],
         "cannot_determine": [
@@ -220,13 +291,13 @@ export const FIXTURES: Record<string, RunState> = {
         ],
         "data_needed": [],
         "limitations": [
-          "Prototype output: figures are model ranges, not forecasts.",
+          "Prototype output: figures are model ranges, not forecasts or calibrated probabilities.",
           "A verified quote shows that a page said something, not that it is true.",
+          "Drivers are treated as independent; correlations between them are not modelled.",
+          "Results entered by the team are not verified by us; mocked demo results are labelled as such.",
           "Only public web pages were used; no paid databases or interviews."
         ],
-        "critic_notes": [
-          "Competitors were not researched; the achievable share may be optimistic if incumbents bundle drone inspection into existing O&M contracts."
-        ]
+        "critic_notes": []
       },
       "error": null
     },
@@ -272,7 +343,7 @@ export const FIXTURES: Record<string, RunState> = {
         "run_id": "demo-success",
         "name": "ranking",
         "status": "done",
-        "message": "Top weak assumptions: c9, c8, c7",
+        "message": "Weakest testable assumptions ranked",
         "started_at": "2026-11-12T18:02:25Z",
         "finished_at": "2026-11-12T18:02:26Z"
       },
@@ -281,7 +352,7 @@ export const FIXTURES: Record<string, RunState> = {
         "run_id": "demo-success",
         "name": "experiments",
         "status": "done",
-        "message": "3 experiment cards",
+        "message": "3 experiment cards with rules fixed in advance",
         "started_at": "2026-11-12T18:02:26Z",
         "finished_at": "2026-11-12T18:03:00Z"
       },
@@ -421,13 +492,13 @@ export const FIXTURES: Record<string, RunState> = {
         "source_id": null,
         "quote": null,
         "derivation": {
-          "formula": "c1 x coverage factor [0.75, 1.0, 1.3]",
+          "formula": "c1 × [0.75, 1.0, 1.3] (operators and O&M providers overlap)",
           "input_claim_ids": [
             "c1"
           ]
         },
         "evidence_strength": 0.7,
-        "sensitivity": 0.344,
+        "sensitivity": 0.1977,
         "status": "unverified",
         "note": null
       },
@@ -446,7 +517,7 @@ export const FIXTURES: Record<string, RunState> = {
         "source_id": null,
         "quote": null,
         "derivation": {
-          "formula": "c2 x c3 x c8",
+          "formula": "c2 × c3 × c8",
           "input_claim_ids": [
             "c2",
             "c3",
@@ -454,7 +525,7 @@ export const FIXTURES: Record<string, RunState> = {
           ]
         },
         "evidence_strength": 0.1,
-        "sensitivity": 0.75,
+        "sensitivity": 0.4313,
         "status": "unverified",
         "note": null
       },
@@ -467,16 +538,16 @@ export const FIXTURES: Record<string, RunState> = {
         "driver": "share_need_budget",
         "value": null,
         "unit": "share",
-        "p10": 0.3,
-        "p50": 0.5,
-        "p90": 0.7,
+        "p10": 0.30000000408862143,
+        "p50": 0.5000000027137291,
+        "p90": 0.7000000007318707,
         "source_id": null,
         "quote": null,
         "derivation": null,
         "evidence_strength": 0.1,
-        "sensitivity": 0.5,
+        "sensitivity": 0.2876,
         "status": "unverified",
-        "note": null
+        "note": "Guess: no source found for budgets. Model uses Beta(4.95, 4.95)."
       },
       {
         "id": "c7",
@@ -487,16 +558,16 @@ export const FIXTURES: Record<string, RunState> = {
         "driver": "adoption_rate",
         "value": null,
         "unit": "share",
-        "p10": 0.1,
-        "p50": 0.25,
-        "p90": 0.45,
+        "p10": 0.10052321755501113,
+        "p50": 0.24730687326588485,
+        "p90": 0.4519372617594435,
         "source_id": null,
         "quote": null,
         "derivation": null,
         "evidence_strength": 0.25,
-        "sensitivity": 0.875,
+        "sensitivity": 0.5108,
         "status": "unverified",
-        "note": "Analogy: drone adoption in power-line inspection."
+        "note": "Analogy: drone adoption in power-line inspection. Model uses Beta(2.54, 7.06)."
       },
       {
         "id": "c8",
@@ -527,16 +598,16 @@ export const FIXTURES: Record<string, RunState> = {
         "driver": "achievable_share",
         "value": null,
         "unit": "share",
-        "p10": 0.02,
-        "p50": 0.05,
-        "p90": 0.1,
+        "p10": 0.007566821397824507,
+        "p50": 0.04186581597852223,
+        "p90": 0.12403832336187155,
         "source_id": null,
         "quote": null,
         "derivation": null,
         "evidence_strength": 0.1,
         "sensitivity": 1.0,
         "status": "unverified",
-        "note": null
+        "note": "Model uses Beta(1.12, 18.88)."
       },
       {
         "id": "c10",
@@ -559,35 +630,6 @@ export const FIXTURES: Record<string, RunState> = {
         "note": "User-supplied figure; see the top-down check."
       },
       {
-        "id": "c11",
-        "run_id": "demo-success",
-        "text": "Obtainable annual revenue in year five.",
-        "type": "estimate",
-        "origin": "model",
-        "driver": null,
-        "value": null,
-        "unit": "EUR per year",
-        "p10": 70000.0,
-        "p50": 240000.0,
-        "p90": 820000.0,
-        "source_id": null,
-        "quote": null,
-        "derivation": {
-          "formula": "c4 x c6 x c7 x c9 x c5 (Monte Carlo, 5,000 draws, seed 42)",
-          "input_claim_ids": [
-            "c4",
-            "c6",
-            "c7",
-            "c9",
-            "c5"
-          ]
-        },
-        "evidence_strength": 0.1,
-        "sensitivity": null,
-        "status": "unverified",
-        "note": null
-      },
-      {
         "id": "c12",
         "run_id": "demo-success",
         "text": "Drone inspection cuts turbine downtime during inspection by about 70%.",
@@ -606,18 +648,113 @@ export const FIXTURES: Record<string, RunState> = {
         "sensitivity": null,
         "status": "unverified",
         "note": "Demoted from fact: this quote was not found on the fetched page."
+      },
+      {
+        "id": "c11",
+        "run_id": "demo-success",
+        "text": "Obtainable annual revenue in year five.",
+        "type": "estimate",
+        "origin": "model",
+        "driver": null,
+        "value": null,
+        "unit": "EUR per year",
+        "p10": 23509.066858292234,
+        "p50": 170779.42005501126,
+        "p90": 775294.7656426055,
+        "source_id": null,
+        "quote": null,
+        "derivation": {
+          "formula": "target organisations (c4) × share with need and budget (c6) × adoption within five years (c7) × share we can win (c9) × annual price per organisation (c5); Monte Carlo, 5,000 draws, seed 42",
+          "input_claim_ids": [
+            "c4",
+            "c6",
+            "c7",
+            "c9",
+            "c5"
+          ]
+        },
+        "evidence_strength": 0.1,
+        "sensitivity": null,
+        "status": "unverified",
+        "note": null
       }
     ],
     "experiments": [
       {
         "id": "x1",
         "run_id": "demo-success",
+        "assumption_id": "c6",
+        "hypothesis": "At least half of interviewed operators and O&M providers have both the need and a budget line for automated blade inspection.",
+        "method": "customer_interviews",
+        "metric": "Interviewed target organisations with need and budget, out of 10",
+        "rule": {
+          "trials": 10,
+          "pass_at_least": 5,
+          "fail_below": 3,
+          "on_fail": "pivot"
+        },
+        "pass_threshold": "5 or more of 10",
+        "kill_criterion": "Fewer than 3 of 10 → pivot",
+        "effort_days": 7.0,
+        "cost_eur": 150.0,
+        "updates_claim_ids": [
+          "c6",
+          "c11"
+        ],
+        "priority": 0.2588,
+        "status": "proposed",
+        "locked_at": null,
+        "successes": 0,
+        "trials_done": 0,
+        "outcome": "pending",
+        "decision_flip_prob": 0.2555,
+        "rank": 3
+      },
+      {
+        "id": "x2",
+        "run_id": "demo-success",
+        "assumption_id": "c7",
+        "hypothesis": "Operators plan to switch from rope access to drone inspection within three years.",
+        "method": "customer_interviews",
+        "metric": "Interviewed operators with a budgeted switch plan, out of 15",
+        "rule": {
+          "trials": 15,
+          "pass_at_least": 6,
+          "fail_below": 3,
+          "on_fail": "kill"
+        },
+        "pass_threshold": "6 or more of 15",
+        "kill_criterion": "Fewer than 3 of 15 → kill",
+        "effort_days": 7.0,
+        "cost_eur": 0.0,
+        "updates_claim_ids": [
+          "c7",
+          "c11"
+        ],
+        "priority": 0.3831,
+        "status": "proposed",
+        "locked_at": null,
+        "successes": 0,
+        "trials_done": 0,
+        "outcome": "pending",
+        "decision_flip_prob": 0.331,
+        "rank": 1
+      },
+      {
+        "id": "x3",
+        "run_id": "demo-success",
         "assumption_id": "c9",
-        "hypothesis": "At least 3 of 20 contacted O&M providers sign a non-binding letter of intent for a paid pilot.",
+        "hypothesis": "Adopting O&M providers sign a non-binding letter of intent for a paid pilot.",
         "method": "letter_of_intent",
-        "metric": "Signed letters of intent / providers contacted",
-        "pass_threshold": "3 or more of 20 (15%)",
-        "kill_criterion": "Fewer than 1 of 20 after two follow-ups",
+        "metric": "Signed letters of intent, out of 20 providers contacted",
+        "rule": {
+          "trials": 20,
+          "pass_at_least": 3,
+          "fail_below": 1,
+          "on_fail": "kill"
+        },
+        "pass_threshold": "3 or more of 20",
+        "kill_criterion": "Fewer than 1 of 20 → kill",
         "effort_days": 10.0,
         "cost_eur": 0.0,
         "updates_claim_ids": [
@@ -625,51 +762,762 @@ export const FIXTURES: Record<string, RunState> = {
           "c11"
         ],
         "priority": 0.9,
-        "status": "proposed"
+        "status": "proposed",
+        "locked_at": null,
+        "successes": 0,
+        "trials_done": 0,
+        "outcome": "pending",
+        "decision_flip_prob": 0.446,
+        "rank": 2
+      }
+    ],
+    "updates": []
+  },
+  "demo-updated": {
+    "run": {
+      "id": "demo-updated",
+      "schema_version": 2,
+      "created_at": "2026-11-12T18:00:00Z",
+      "updated_at": "2026-11-12T18:20:00Z",
+      "status": "done",
+      "idea_text": "We built a drone that inspects wind-turbine blades with thermal and RGB cameras and detects defects with an on-board AI model, so operators no longer need rope-access teams. We think the market is worth EUR 5 billion.",
+      "context": {
+        "sector": "energy",
+        "region": "EU",
+        "trl": 4
+      },
+      "scope": {
+        "verdict": "in_scope",
+        "reasons": [
+          "A concrete technology with identifiable B2B customers (wind farm operators and O&M providers)."
+        ],
+        "clarifying_questions": [],
+        "refusal_kind": null
+      },
+      "interpretation": {
+        "summary": "Autonomous drones with thermal and RGB cameras inspect wind-turbine blades and flag defects with an on-board AI model, replacing rope-access inspection teams.",
+        "technology": "Drone-mounted thermal/RGB imaging with on-board defect classification",
+        "trl_guess": 4,
+        "target_customers": [
+          "Wind farm operators",
+          "Independent operations and maintenance (O&M) providers"
+        ],
+        "market_drivers": [
+          "Ageing onshore wind fleet needs more frequent inspection",
+          "Shortage and cost of rope-access technicians",
+          "Pressure to cut turbine downtime"
+        ],
+        "sector": "energy",
+        "region": "EU",
+        "assumptions": [
+          {
+            "id": "a1",
+            "text": "Wind farm operators and independent O&M providers in the EU",
+            "driver": "n_target_orgs",
+            "included": true,
+            "unit": "organisations",
+            "p10": 1200.0,
+            "p50": 2000.0,
+            "p90": 3000.0
+          },
+          {
+            "id": "a2",
+            "text": "Share of them with both the need and a budget for automated blade inspection",
+            "driver": "share_need_budget",
+            "included": true,
+            "unit": "share",
+            "p10": 0.3,
+            "p50": 0.5,
+            "p90": 0.7
+          },
+          {
+            "id": "a3",
+            "text": "Share adopting drone-based blade inspection within five years",
+            "driver": "adoption_rate",
+            "included": true,
+            "unit": "share",
+            "p10": 0.1,
+            "p50": 0.25,
+            "p90": 0.45
+          },
+          {
+            "id": "a4",
+            "text": "Annual price per organisation",
+            "driver": "price_per_org",
+            "included": true,
+            "unit": "EUR per organisation per year",
+            "p10": 8000.0,
+            "p50": 20000.0,
+            "p90": 45000.0
+          },
+          {
+            "id": "a5",
+            "text": "Share of adopting organisations we can win within five years",
+            "driver": "achievable_share",
+            "included": true,
+            "unit": "share",
+            "p10": 0.02,
+            "p50": 0.05,
+            "p90": 0.1
+          }
+        ]
+      },
+      "assessment": {
+        "evidence_floor_met": true,
+        "headline": "Obtainable annual revenue in year five: {{c11}}.",
+        "market_model": {
+          "output_label": "Obtainable annual revenue in year five",
+          "output_claim_id": "c11",
+          "draws": 5000,
+          "seed": 42,
+          "tornado": [
+            {
+              "driver": "achievable_share",
+              "claim_id": "c9",
+              "low_output": 25756.794160340203,
+              "high_output": 422215.5365488066,
+              "swing": 396458.7423884664
+            },
+            {
+              "driver": "adoption_rate",
+              "claim_id": "c7",
+              "low_output": 57925.27121405485,
+              "high_output": 260423.30643973403,
+              "swing": 202498.0352256792
+            },
+            {
+              "driver": "price_per_org",
+              "claim_id": "c5",
+              "low_output": 85504.53193141971,
+              "high_output": 256513.59579425916,
+              "swing": 171009.06386283945
+            },
+            {
+              "driver": "share_need_budget",
+              "claim_id": "c6",
+              "low_output": 90011.26446099124,
+              "high_output": 202146.71871151077,
+              "swing": 112135.45425051953
+            },
+            {
+              "driver": "n_target_orgs",
+              "claim_id": "c4",
+              "low_output": 106880.66491427465,
+              "high_output": 185259.81918474272,
+              "swing": 78379.15427046808
+            }
+          ],
+          "top_down_check": {
+            "claim_id": "c10",
+            "top_down_value": 5000000000.0,
+            "bottom_up_value": 13763920.119698497,
+            "ratio": 363.268600552553,
+            "note": "The figure in the idea is 363 times the bottom-up serviceable market (target organisations × share with need and budget × annual price). It stays a user-supplied assumption and is not used in the model."
+          }
+        },
+        "decision": {
+          "verdict": "pivot",
+          "provisional": false,
+          "reasons": [
+            "x1 (customer interviews) failed its rule: 2 of 10 (rule fixed in advance: Fewer than 3 of 10 → pivot).",
+            "Chance of reaching €150k a year: 44% (the rule fixed in advance needs at least 50% to continue)."
+          ],
+          "viability_threshold": 150000.0,
+          "p_viable": 0.436
+        },
+        "sections": [
+          {
+            "title": "Verdict",
+            "body": "Pivot: an experiment failed a rule that was fixed in advance to mean this is the wrong segment. Obtainable annual revenue in year five is {{c11}}. The answer moves most with {{c9}} and {{c7}}."
+          },
+          {
+            "title": "Market model",
+            "body": "Target organisations {{c4}}; share with need and budget {{c6}}; adoption within five years {{c7}}; share we can win {{c9}}; annual price per organisation {{c5}}. Verified facts behind the model: {{c1}}, {{c2}} and {{c3}}."
+          },
+          {
+            "title": "Weakest assumptions",
+            "body": "{{c9}}, {{c5}} and {{c7}} combine the most influence with the least evidence, so they are the first to test."
+          },
+          {
+            "title": "What would change our mind",
+            "body": "Customer interviews on {{c7}}: if it fails its rule, the verdict becomes kill. Letter-of-intent request on {{c9}}: if it fails its rule, the verdict becomes kill. Customer interviews on {{c6}} has decided: fail."
+          },
+          {
+            "title": "What we learned",
+            "body": "A mocked result for {{c6}} ({{c13}}) changed the verdict from continue to pivot."
+          },
+          {
+            "title": "Top-down cross-check",
+            "body": "The figure in the idea ({{c10}}) is far above what the bottom-up model supports. It is kept as a user-supplied assumption and does not enter the model."
+          }
+        ],
+        "cannot_determine": [
+          "How beyond-visual-line-of-sight (BVLOS) drone rules will develop in Germany",
+          "Prices of competing robotic blade-crawler services"
+        ],
+        "data_needed": [],
+        "limitations": [
+          "Prototype output: figures are model ranges, not forecasts or calibrated probabilities.",
+          "A verified quote shows that a page said something, not that it is true.",
+          "Drivers are treated as independent; correlations between them are not modelled.",
+          "Results entered by the team are not verified by us; mocked demo results are labelled as such.",
+          "Only public web pages were used; no paid databases or interviews."
+        ],
+        "critic_notes": []
+      },
+      "error": null
+    },
+    "steps": [
+      {
+        "id": "st1",
+        "run_id": "demo-updated",
+        "name": "scoping",
+        "status": "done",
+        "message": "In scope: wind-turbine blade inspection drones",
+        "started_at": "2026-11-12T18:00:00Z",
+        "finished_at": "2026-11-12T18:00:12Z"
+      },
+      {
+        "id": "st2",
+        "run_id": "demo-updated",
+        "name": "researching",
+        "status": "done",
+        "message": "6 searches, 3 of 4 pages fetched (1 timed out)",
+        "started_at": "2026-11-12T18:01:00Z",
+        "finished_at": "2026-11-12T18:02:10Z"
+      },
+      {
+        "id": "st3",
+        "run_id": "demo-updated",
+        "name": "verifying",
+        "status": "done",
+        "message": "3 of 4 quotes verified; 1 claim demoted to assumption",
+        "started_at": "2026-11-12T18:02:10Z",
+        "finished_at": "2026-11-12T18:02:20Z"
+      },
+      {
+        "id": "st4",
+        "run_id": "demo-updated",
+        "name": "modelling",
+        "status": "done",
+        "message": "5,000 Monte Carlo draws, seed 42",
+        "started_at": "2026-11-12T18:02:20Z",
+        "finished_at": "2026-11-12T18:02:25Z"
+      },
+      {
+        "id": "st5",
+        "run_id": "demo-updated",
+        "name": "ranking",
+        "status": "done",
+        "message": "Weakest testable assumptions ranked",
+        "started_at": "2026-11-12T18:02:25Z",
+        "finished_at": "2026-11-12T18:02:26Z"
+      },
+      {
+        "id": "st6",
+        "run_id": "demo-updated",
+        "name": "experiments",
+        "status": "done",
+        "message": "3 experiment cards with rules fixed in advance",
+        "started_at": "2026-11-12T18:02:26Z",
+        "finished_at": "2026-11-12T18:03:00Z"
+      },
+      {
+        "id": "st7",
+        "run_id": "demo-updated",
+        "name": "composing",
+        "status": "done",
+        "message": "Report composed from the ledger",
+        "started_at": "2026-11-12T18:03:00Z",
+        "finished_at": "2026-11-12T18:03:40Z"
+      }
+    ],
+    "sources": [
+      {
+        "id": "s1",
+        "run_id": "demo-updated",
+        "url": "https://windreport.example/fixture/annual-statistics",
+        "domain": "windreport.example",
+        "title": "(fixture) Wind energy in Europe: annual statistics",
+        "credibility_tier": "industry_report",
+        "fetched_at": "2026-11-12T18:01:20Z",
+        "text_hash": "sha256:fixture-s1",
+        "fetch_ok": true,
+        "error": null
+      },
+      {
+        "id": "s2",
+        "run_id": "demo-updated",
+        "url": "https://stats.example/fixture/electricity-enterprises",
+        "domain": "stats.example",
+        "title": "(fixture) Enterprises in electricity generation by activity",
+        "credibility_tier": "government",
+        "fetched_at": "2026-11-12T18:01:25Z",
+        "text_hash": "sha256:fixture-s2",
+        "fetch_ok": true,
+        "error": null
+      },
+      {
+        "id": "s3",
+        "run_id": "demo-updated",
+        "url": "https://droneblog.example/fixture/blade-inspection-cost",
+        "domain": "droneblog.example",
+        "title": "(fixture) What does a blade inspection cost?",
+        "credibility_tier": "blog",
+        "fetched_at": "2026-11-12T18:01:31Z",
+        "text_hash": "sha256:fixture-s3",
+        "fetch_ok": true,
+        "error": null
+      },
+      {
+        "id": "s4",
+        "run_id": "demo-updated",
+        "url": "https://paywalled.example/fixture/om-market-study",
+        "domain": "paywalled.example",
+        "title": null,
+        "credibility_tier": "unknown",
+        "fetched_at": "2026-11-12T18:01:40Z",
+        "text_hash": null,
+        "fetch_ok": false,
+        "error": "Timed out after 8 s"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c1",
+        "run_id": "demo-updated",
+        "text": "About 2,000 enterprises operate or maintain wind generation assets in the EU.",
+        "type": "fact",
+        "origin": "research",
+        "driver": null,
+        "value": 2000.0,
+        "unit": "organisations",
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "source_id": "s2",
+        "quote": "around 2,000 enterprises operate or maintain wind generation assets in the EU",
+        "derivation": null,
+        "evidence_strength": 0.7,
+        "sensitivity": null,
+        "status": "verified",
+        "note": null
+      },
+      {
+        "id": "c2",
+        "run_id": "demo-updated",
+        "text": "A manual rope-access blade inspection costs around EUR 1,000 per turbine.",
+        "type": "fact",
+        "origin": "research",
+        "driver": null,
+        "value": 1000.0,
+        "unit": "EUR per turbine",
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "source_id": "s3",
+        "quote": "a rope-access team typically charges around EUR 1,000 per turbine for a blade inspection",
+        "derivation": null,
+        "evidence_strength": 0.4,
+        "sensitivity": null,
+        "status": "verified",
+        "note": "Blog source: evidence strength capped at 0.4."
+      },
+      {
+        "id": "c3",
+        "run_id": "demo-updated",
+        "text": "An operator's portfolio comprises about 30 turbines on average.",
+        "type": "fact",
+        "origin": "research",
+        "driver": null,
+        "value": 30.0,
+        "unit": "turbines per organisation",
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "source_id": "s1",
+        "quote": "the average portfolio comprises about 30 turbines",
+        "derivation": null,
+        "evidence_strength": 0.7,
+        "sensitivity": null,
+        "status": "verified",
+        "note": null
+      },
+      {
+        "id": "c4",
+        "run_id": "demo-updated",
+        "text": "Target organisations in the EU (operators and O&M providers).",
+        "type": "estimate",
+        "origin": "model",
+        "driver": "n_target_orgs",
+        "value": null,
+        "unit": "organisations",
+        "p10": 1500.0,
+        "p50": 2000.0,
+        "p90": 2600.0,
+        "source_id": null,
+        "quote": null,
+        "derivation": {
+          "formula": "c1 × [0.75, 1.0, 1.3] (operators and O&M providers overlap)",
+          "input_claim_ids": [
+            "c1"
+          ]
+        },
+        "evidence_strength": 0.7,
+        "sensitivity": 0.1977,
+        "status": "unverified",
+        "note": null
+      },
+      {
+        "id": "c5",
+        "run_id": "demo-updated",
+        "text": "Annual price per organisation.",
+        "type": "estimate",
+        "origin": "model",
+        "driver": "price_per_org",
+        "value": null,
+        "unit": "EUR per organisation per year",
+        "p10": 12000.0,
+        "p50": 20000.0,
+        "p90": 36000.0,
+        "source_id": null,
+        "quote": null,
+        "derivation": {
+          "formula": "c2 × c3 × c8",
+          "input_claim_ids": [
+            "c2",
+            "c3",
+            "c8"
+          ]
+        },
+        "evidence_strength": 0.1,
+        "sensitivity": 0.4313,
+        "status": "unverified",
+        "note": null
+      },
+      {
+        "id": "c6",
+        "run_id": "demo-updated",
+        "text": "Share of target organisations with both the need and a budget for automated blade inspection.",
+        "type": "estimate",
+        "origin": "model",
+        "driver": "share_need_budget",
+        "value": null,
+        "unit": "share",
+        "p10": 0.21734073491703784,
+        "p50": 0.3440980029924624,
+        "p90": 0.48810242439009116,
+        "source_id": null,
+        "quote": null,
+        "derivation": {
+          "formula": "Beta-Binomial update of the share with need and budget assumption: prior Beta(4.95, 4.95) + 2 of 10 (c13) → Beta(6.95, 12.95)",
+          "input_claim_ids": [
+            "c13"
+          ]
+        },
+        "evidence_strength": 0.1,
+        "sensitivity": 0.2828,
+        "status": "unverified",
+        "note": "Updated by experiment results (c13), including mocked demo values."
+      },
+      {
+        "id": "c7",
+        "run_id": "demo-updated",
+        "text": "Share of target organisations that adopt drone-based blade inspection within five years.",
+        "type": "assumption",
+        "origin": "model",
+        "driver": "adoption_rate",
+        "value": null,
+        "unit": "share",
+        "p10": 0.10052321755501113,
+        "p50": 0.24730687326588485,
+        "p90": 0.4519372617594435,
+        "source_id": null,
+        "quote": null,
+        "derivation": null,
+        "evidence_strength": 0.25,
+        "sensitivity": 0.5108,
+        "status": "unverified",
+        "note": "Analogy: drone adoption in power-line inspection. Model uses Beta(2.54, 7.06)."
+      },
+      {
+        "id": "c8",
+        "run_id": "demo-updated",
+        "text": "Customers pay this share of their current manual inspection spend.",
+        "type": "assumption",
+        "origin": "model",
+        "driver": null,
+        "value": null,
+        "unit": "share of current spend",
+        "p10": 0.5,
+        "p50": 0.67,
+        "p90": 1.0,
+        "source_id": null,
+        "quote": null,
+        "derivation": null,
+        "evidence_strength": 0.1,
+        "sensitivity": null,
+        "status": "unverified",
+        "note": null
+      },
+      {
+        "id": "c9",
+        "run_id": "demo-updated",
+        "text": "Share of adopting organisations we can win within five years.",
+        "type": "assumption",
+        "origin": "model",
+        "driver": "achievable_share",
+        "value": null,
+        "unit": "share",
+        "p10": 0.007566821397824507,
+        "p50": 0.04186581597852223,
+        "p90": 0.12403832336187155,
+        "source_id": null,
+        "quote": null,
+        "derivation": null,
+        "evidence_strength": 0.1,
+        "sensitivity": 1.0,
+        "status": "unverified",
+        "note": "Model uses Beta(1.12, 18.88)."
+      },
+      {
+        "id": "c10",
+        "run_id": "demo-updated",
+        "text": "The market is worth EUR 5 billion (stated in the idea).",
+        "type": "assumption",
+        "origin": "user",
+        "driver": null,
+        "value": 5000000000.0,
+        "unit": "EUR",
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "source_id": null,
+        "quote": null,
+        "derivation": null,
+        "evidence_strength": 0.1,
+        "sensitivity": null,
+        "status": "unverified",
+        "note": "User-supplied figure; see the top-down check."
+      },
+      {
+        "id": "c12",
+        "run_id": "demo-updated",
+        "text": "Drone inspection cuts turbine downtime during inspection by about 70%.",
+        "type": "assumption",
+        "origin": "research",
+        "driver": null,
+        "value": 0.7,
+        "unit": "share",
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "source_id": "s3",
+        "quote": "reduces downtime by up to 70%",
+        "derivation": null,
+        "evidence_strength": 0.1,
+        "sensitivity": null,
+        "status": "unverified",
+        "note": "Demoted from fact: this quote was not found on the fetched page."
+      },
+      {
+        "id": "c11",
+        "run_id": "demo-updated",
+        "text": "Obtainable annual revenue in year five.",
+        "type": "estimate",
+        "origin": "model",
+        "driver": null,
+        "value": null,
+        "unit": "EUR per year",
+        "p10": 16983.230785630756,
+        "p50": 119639.48686678922,
+        "p90": 542812.1778934301,
+        "source_id": null,
+        "quote": null,
+        "derivation": {
+          "formula": "target organisations (c4) × share with need and budget (c6) × adoption within five years (c7) × share we can win (c9) × annual price per organisation (c5); Monte Carlo, 5,000 draws, seed 42",
+          "input_claim_ids": [
+            "c4",
+            "c6",
+            "c7",
+            "c9",
+            "c5"
+          ]
+        },
+        "evidence_strength": 0.1,
+        "sensitivity": null,
+        "status": "unverified",
+        "note": null
+      },
+      {
+        "id": "c13",
+        "run_id": "demo-updated",
+        "text": "Result of x1 (customer interviews): 2 of 10 — Interviewed target organisations with need and budget, out of 10 [MOCKED demo value]",
+        "type": "assumption",
+        "origin": "experiment",
+        "driver": null,
+        "value": 0.2,
+        "unit": "share",
+        "p10": null,
+        "p50": null,
+        "p90": null,
+        "source_id": null,
+        "quote": null,
+        "derivation": null,
+        "evidence_strength": 0.1,
+        "sensitivity": null,
+        "status": "unverified",
+        "note": "Mocked demo value: 2 of 10 interviewees have need and budget."
+      }
+    ],
+    "experiments": [
+      {
+        "id": "x1",
+        "run_id": "demo-updated",
+        "assumption_id": "c6",
+        "hypothesis": "At least half of interviewed operators and O&M providers have both the need and a budget line for automated blade inspection.",
+        "method": "customer_interviews",
+        "metric": "Interviewed target organisations with need and budget, out of 10",
+        "rule": {
+          "trials": 10,
+          "pass_at_least": 5,
+          "fail_below": 3,
+          "on_fail": "pivot"
+        },
+        "pass_threshold": "5 or more of 10",
+        "kill_criterion": "Fewer than 3 of 10 → pivot",
+        "effort_days": 7.0,
+        "cost_eur": 150.0,
+        "updates_claim_ids": [
+          "c6",
+          "c11"
+        ],
+        "priority": 0.2545,
+        "status": "accepted",
+        "locked_at": "2026-11-12T18:10:00Z",
+        "successes": 2,
+        "trials_done": 10,
+        "outcome": "fail",
+        "decision_flip_prob": null,
+        "rank": null
       },
       {
         "id": "x2",
-        "run_id": "demo-success",
-        "assumption_id": "c8",
-        "hypothesis": "Operators accept a price of at least 60% of their current rope-access spend.",
-        "method": "pricing_test",
-        "metric": "Share of 10 operators who accept the quoted price in a mock offer",
-        "pass_threshold": "5 or more of 10 accept at 60% or more of current spend",
-        "kill_criterion": "Fewer than 2 of 10 accept at 50%",
-        "effort_days": 5.0,
-        "cost_eur": 0.0,
-        "updates_claim_ids": [
-          "c8",
-          "c5",
-          "c11"
-        ],
-        "priority": 0.675,
-        "status": "proposed"
-      },
-      {
-        "id": "x3",
-        "run_id": "demo-success",
+        "run_id": "demo-updated",
         "assumption_id": "c7",
         "hypothesis": "Operators plan to switch from rope access to drone inspection within three years.",
         "method": "customer_interviews",
-        "metric": "Share of 15 interviewed operators with a budgeted plan",
-        "pass_threshold": "40% or more have a budgeted plan",
-        "kill_criterion": "Under 15%, or most name regulation as the blocker",
+        "metric": "Interviewed operators with a budgeted switch plan, out of 15",
+        "rule": {
+          "trials": 15,
+          "pass_at_least": 6,
+          "fail_below": 3,
+          "on_fail": "kill"
+        },
+        "pass_threshold": "6 or more of 15",
+        "kill_criterion": "Fewer than 3 of 15 → kill",
         "effort_days": 7.0,
-        "cost_eur": 150.0,
+        "cost_eur": 0.0,
         "updates_claim_ids": [
           "c7",
           "c11"
         ],
-        "priority": 0.656,
-        "status": "proposed"
+        "priority": 0.3831,
+        "status": "accepted",
+        "locked_at": "2026-11-12T18:10:00Z",
+        "successes": 0,
+        "trials_done": 0,
+        "outcome": "pending",
+        "decision_flip_prob": 0.331,
+        "rank": 1
+      },
+      {
+        "id": "x3",
+        "run_id": "demo-updated",
+        "assumption_id": "c9",
+        "hypothesis": "Adopting O&M providers sign a non-binding letter of intent for a paid pilot.",
+        "method": "letter_of_intent",
+        "metric": "Signed letters of intent, out of 20 providers contacted",
+        "rule": {
+          "trials": 20,
+          "pass_at_least": 3,
+          "fail_below": 1,
+          "on_fail": "kill"
+        },
+        "pass_threshold": "3 or more of 20",
+        "kill_criterion": "Fewer than 1 of 20 → kill",
+        "effort_days": 10.0,
+        "cost_eur": 0.0,
+        "updates_claim_ids": [
+          "c9",
+          "c11"
+        ],
+        "priority": 0.9,
+        "status": "accepted",
+        "locked_at": "2026-11-12T18:10:00Z",
+        "successes": 0,
+        "trials_done": 0,
+        "outcome": "pending",
+        "decision_flip_prob": 0.446,
+        "rank": 2
+      }
+    ],
+    "updates": [
+      {
+        "id": "u1",
+        "run_id": "demo-updated",
+        "created_at": "2026-11-12T18:20:00Z",
+        "experiment_id": "x1",
+        "claim_id": "c6",
+        "observation_claim_id": "c13",
+        "successes": 2,
+        "trials": 10,
+        "mocked": true,
+        "outcome": "fail",
+        "prior": {
+          "alpha": 4.949683162449743,
+          "beta": 4.949683056185028,
+          "p10": 0.30000000864103155,
+          "p50": 0.5000000057428106,
+          "p90": 0.7000000015601241
+        },
+        "posterior": {
+          "alpha": 6.949683162449743,
+          "beta": 12.949683056185027,
+          "p10": 0.21734073491703784,
+          "p50": 0.3440980029924624,
+          "p90": 0.48810242439009116
+        },
+        "output_before": {
+          "p10": 23509.066858292234,
+          "p50": 170779.42005501126,
+          "p90": 775294.7656426055
+        },
+        "output_after": {
+          "p10": 16983.230785630756,
+          "p50": 119639.48686678922,
+          "p90": 542812.1778934301
+        },
+        "p_viable_before": 0.5422,
+        "p_viable_after": 0.436,
+        "verdict_before": "continue",
+        "verdict_after": "pivot",
+        "rank_before": [
+          "x2",
+          "x3",
+          "x1"
+        ],
+        "rank_after": [
+          "x2",
+          "x3"
+        ]
       }
     ]
   },
   "demo-needs-input": {
     "run": {
       "id": "demo-needs-input",
-      "schema_version": 1,
+      "schema_version": 2,
       "created_at": "2026-11-12T18:10:00Z",
       "updated_at": "2026-11-12T18:10:08Z",
       "status": "needs_input",
@@ -709,12 +1557,13 @@ export const FIXTURES: Record<string, RunState> = {
     ],
     "sources": [],
     "claims": [],
-    "experiments": []
+    "experiments": [],
+    "updates": []
   },
   "demo-refused": {
     "run": {
       "id": "demo-refused",
-      "schema_version": 1,
+      "schema_version": 2,
       "created_at": "2026-11-12T18:20:00Z",
       "updated_at": "2026-11-12T18:20:06Z",
       "status": "refused",
@@ -750,6 +1599,7 @@ export const FIXTURES: Record<string, RunState> = {
     ],
     "sources": [],
     "claims": [],
-    "experiments": []
+    "experiments": [],
+    "updates": []
   }
 };

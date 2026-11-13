@@ -1,5 +1,15 @@
-// Display helpers for the claim ledger. Written by Dev B; keep in sync with backend/app/models.py.
-import type { Claim, ExperimentMethod, RunState, RunStatus } from "./contract";
+// Display helpers for the claim ledger and the learning loop. Written by Dev B; keep in sync with backend/app/models.py.
+import type {
+  BetaBelief,
+  Claim,
+  Experiment,
+  ExperimentMethod,
+  OutputRange,
+  RunState,
+  RunStatus,
+  UpdateEvent,
+  Verdict,
+} from "./contract";
 
 // ------------------------------------------------------------------ which screen
 
@@ -26,6 +36,15 @@ export function screenFor(status: RunStatus): Screen {
 /** Keep polling GET /runs/{id} only while the backend is working. */
 export function isWorking(status: RunStatus): boolean {
   return screenFor(status) === "progress";
+}
+
+/** Results can be entered only after the plan was approved at Gate 2. */
+export function canEnterResults(state: RunState, experiment: Experiment): boolean {
+  return (
+    state.run.status === "done" &&
+    (experiment.status === "accepted" || experiment.status === "edited") &&
+    experiment.locked_at !== null
+  );
 }
 
 // ------------------------------------------------------------------ report text
@@ -77,9 +96,44 @@ export function formatClaimValue(claim: Claim): string | null {
   return null;
 }
 
-/** Format a market-model output (tornado ends, top-down values) in the output claim's unit. */
+/** Format a market-model output (tornado ends, top-down values, thresholds) in the output claim's unit. */
 export function formatAmount(n: number, unit: string | null): string {
   return formatter(unit)(n);
+}
+
+/** "€120K (€17K–€543K)" for an output range in EUR. */
+export function formatOutputRange(range: OutputRange, unit: string | null = "EUR per year"): string {
+  const fmt = formatter(unit);
+  return `${fmt(range.p50)} (${fmt(range.p10)}–${fmt(range.p90)})`;
+}
+
+/** "34% (22%–49%)" for a share belief. */
+export function formatBelief(belief: BetaBelief): string {
+  const pct = (x: number) => `${Math.round(x * 100)}%`;
+  return `${pct(belief.p50)} (${pct(belief.p10)}–${pct(belief.p90)})`;
+}
+
+export function formatPercent(share: number): string {
+  return `${Math.round(share * 100)}%`;
+}
+
+// ------------------------------------------------------------------ learning loop
+
+export const VERDICT_LABEL: Record<Verdict, string> = {
+  continue: "Continue",
+  pivot: "Pivot",
+  kill: "Kill",
+};
+
+/** Open experiments, best next experiment first (rank 1). */
+export function rankedExperiments(state: RunState): Experiment[] {
+  return state.experiments
+    .filter((x) => x.rank !== null)
+    .sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
+}
+
+export function latestUpdate(state: RunState): UpdateEvent | undefined {
+  return state.updates.length ? state.updates[state.updates.length - 1] : undefined;
 }
 
 // ------------------------------------------------------------------ labels

@@ -1,3 +1,5 @@
+-- LEGACY (schema v1). Since v2 the backend keeps runs in memory and the UI reads the API
+-- (GET /runs/{id}); these tables are not used. Kept for reference only.
 -- Lab-to-Market schema, schema_version 1. Mirrors backend/app/models.py.
 -- Run in the Supabase SQL editor. Safe to re-run.
 --

@@ -1,12 +1,16 @@
 {
   "run": {
     "id": "demo-needs-input",
-    "schema_version": 1,
+    "schema_version": 2,
     "created_at": "2026-11-12T18:10:00Z",
     "updated_at": "2026-11-12T18:10:08Z",
     "status": "needs_input",
     "idea_text": "An AI app for farmers.",
-    "context": { "sector": null, "region": null, "trl": null },
+    "context": {
+      "sector": null,
+      "region": null,
+      "trl": null
+    },
     "scope": {
       "verdict": "needs_info",
       "reasons": [
@@ -25,9 +29,18 @@
     "error": null
   },
   "steps": [
-    { "id": "st1", "run_id": "demo-needs-input", "name": "scoping", "status": "done", "message": "Needs more information", "started_at": "2026-11-12T18:10:00Z", "finished_at": "2026-11-12T18:10:08Z" }
+    {
+      "id": "st1",
+      "run_id": "demo-needs-input",
+      "name": "scoping",
+      "status": "done",
+      "message": "Needs more information",
+      "started_at": "2026-11-12T18:10:00Z",
+      "finished_at": "2026-11-12T18:10:08Z"
+    }
   ],
   "sources": [],
   "claims": [],
-  "experiments": []
+  "experiments": [],
+  "updates": []
 }

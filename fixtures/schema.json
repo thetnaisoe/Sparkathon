@@ -46,6 +46,19 @@
           },
           "title": "Decisions",
           "type": "array"
+        },
+        "viability_threshold": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Viability Threshold"
         }
       },
       "required": [
@@ -77,6 +90,17 @@
           "anyOf": [
             {
               "$ref": "#/$defs/MarketModel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Decision"
             },
             {
               "type": "null"
@@ -128,6 +152,49 @@
       "title": "Assessment",
       "type": "object"
     },
+    "BetaBelief": {
+      "additionalProperties": false,
+      "description": "Belief about a share, as a Beta(alpha, beta) distribution and its quantiles.",
+      "properties": {
+        "alpha": {
+          "exclusiveMinimum": 0,
+          "title": "Alpha",
+          "type": "number"
+        },
+        "beta": {
+          "exclusiveMinimum": 0,
+          "title": "Beta",
+          "type": "number"
+        },
+        "p10": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P10",
+          "type": "number"
+        },
+        "p50": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P50",
+          "type": "number"
+        },
+        "p90": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P90",
+          "type": "number"
+        }
+      },
+      "required": [
+        "alpha",
+        "beta",
+        "p10",
+        "p50",
+        "p90"
+      ],
+      "title": "BetaBelief",
+      "type": "object"
+    },
     "Claim": {
       "additionalProperties": false,
       "properties": {
@@ -157,7 +224,8 @@
           "enum": [
             "research",
             "user",
-            "model"
+            "model",
+            "experiment"
           ],
           "title": "Origin",
           "type": "string"
@@ -328,6 +396,53 @@
       "title": "Claim",
       "type": "object"
     },
+    "Decision": {
+      "additionalProperties": false,
+      "description": "The verdict, computed by code from the rules fixed in advance. Never by the model.",
+      "properties": {
+        "verdict": {
+          "enum": [
+            "continue",
+            "pivot",
+            "kill"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "provisional": {
+          "title": "Provisional",
+          "type": "boolean"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        },
+        "viability_threshold": {
+          "exclusiveMinimum": 0,
+          "title": "Viability Threshold",
+          "type": "number"
+        },
+        "p_viable": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P Viable",
+          "type": "number"
+        }
+      },
+      "required": [
+        "verdict",
+        "provisional",
+        "reasons",
+        "viability_threshold",
+        "p_viable"
+      ],
+      "title": "Decision",
+      "type": "object"
+    },
     "Derivation": {
       "additionalProperties": false,
       "properties": {
@@ -354,7 +469,7 @@
     },
     "DraftAssumption": {
       "additionalProperties": false,
-      "description": "An assumption proposed at Gate 1. The user can edit or untick it.",
+      "description": "An assumption proposed at Gate 1. The user can edit it; non-driver ones can be unticked.\n\nAssumptions with a `driver` are market-model inputs and must stay included.",
       "properties": {
         "id": {
           "title": "Id",
@@ -387,6 +502,54 @@
           "default": true,
           "title": "Included",
           "type": "boolean"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "p10": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P10"
+        },
+        "p50": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P50"
+        },
+        "p90": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P90"
         }
       },
       "required": [
@@ -533,6 +696,9 @@
           "title": "Metric",
           "type": "string"
         },
+        "rule": {
+          "$ref": "#/$defs/ExperimentRule"
+        },
         "pass_threshold": {
           "title": "Pass Threshold",
           "type": "string"
@@ -574,6 +740,69 @@
           ],
           "title": "Status",
           "type": "string"
+        },
+        "locked_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locked At"
+        },
+        "successes": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Successes",
+          "type": "integer"
+        },
+        "trials_done": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Trials Done",
+          "type": "integer"
+        },
+        "outcome": {
+          "default": "pending",
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "inconclusive"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "decision_flip_prob": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decision Flip Prob"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rank"
         }
       },
       "required": [
@@ -583,6 +812,7 @@
         "hypothesis",
         "method",
         "metric",
+        "rule",
         "pass_threshold",
         "kill_criterion",
         "effort_days",
@@ -632,29 +862,16 @@
           "default": null,
           "title": "Metric"
         },
-        "pass_threshold": {
+        "rule": {
           "anyOf": [
             {
-              "type": "string"
+              "$ref": "#/$defs/ExperimentRule"
             },
             {
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Pass Threshold"
-        },
-        "kill_criterion": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Kill Criterion"
+          "default": null
         }
       },
       "required": [
@@ -662,6 +879,44 @@
         "decision"
       ],
       "title": "ExperimentDecision",
+      "type": "object"
+    },
+    "ExperimentRule": {
+      "additionalProperties": false,
+      "description": "Decision rule fixed in advance (locked at Gate 2) and evaluated by code.\n\nWith the planned number of trials: pass if successes >= pass_at_least,\nfail if successes < fail_below, otherwise inconclusive.",
+      "properties": {
+        "trials": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Trials",
+          "type": "integer"
+        },
+        "pass_at_least": {
+          "minimum": 1,
+          "title": "Pass At Least",
+          "type": "integer"
+        },
+        "fail_below": {
+          "minimum": 1,
+          "title": "Fail Below",
+          "type": "integer"
+        },
+        "on_fail": {
+          "default": "kill",
+          "enum": [
+            "pivot",
+            "kill"
+          ],
+          "title": "On Fail",
+          "type": "string"
+        }
+      },
+      "required": [
+        "trials",
+        "pass_at_least",
+        "fail_below"
+      ],
+      "title": "ExperimentRule",
       "type": "object"
     },
     "Interpretation": {
@@ -793,6 +1048,30 @@
       "title": "MarketModel",
       "type": "object"
     },
+    "OutputRange": {
+      "additionalProperties": false,
+      "properties": {
+        "p10": {
+          "title": "P10",
+          "type": "number"
+        },
+        "p50": {
+          "title": "P50",
+          "type": "number"
+        },
+        "p90": {
+          "title": "P90",
+          "type": "number"
+        }
+      },
+      "required": [
+        "p10",
+        "p50",
+        "p90"
+      ],
+      "title": "OutputRange",
+      "type": "object"
+    },
     "ReportSection": {
       "additionalProperties": false,
       "properties": {
@@ -812,6 +1091,51 @@
       "title": "ReportSection",
       "type": "object"
     },
+    "ResultCreate": {
+      "additionalProperties": false,
+      "description": "Body of POST /runs/{id}/results: the outcome of running one experiment.",
+      "properties": {
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "successes": {
+          "minimum": 0,
+          "title": "Successes",
+          "type": "integer"
+        },
+        "trials": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Trials",
+          "type": "integer"
+        },
+        "mocked": {
+          "title": "Mocked",
+          "type": "boolean"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "successes",
+        "trials",
+        "mocked"
+      ],
+      "title": "ResultCreate",
+      "type": "object"
+    },
     "Run": {
       "additionalProperties": false,
       "properties": {
@@ -820,7 +1144,7 @@
           "type": "string"
         },
         "schema_version": {
-          "default": 1,
+          "default": 2,
           "title": "Schema Version",
           "type": "integer"
         },
@@ -1043,6 +1367,13 @@
             "$ref": "#/$defs/Experiment"
           },
           "title": "Experiments",
+          "type": "array"
+        },
+        "updates": {
+          "items": {
+            "$ref": "#/$defs/UpdateEvent"
+          },
+          "title": "Updates",
           "type": "array"
         }
       },
@@ -1343,7 +1674,142 @@
       ],
       "title": "TornadoBar",
       "type": "object"
+    },
+    "UpdateEvent": {
+      "additionalProperties": false,
+      "description": "One entered result: prior -> evidence -> posterior, and what it changed.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "claim_id": {
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "observation_claim_id": {
+          "title": "Observation Claim Id",
+          "type": "string"
+        },
+        "successes": {
+          "minimum": 0,
+          "title": "Successes",
+          "type": "integer"
+        },
+        "trials": {
+          "minimum": 1,
+          "title": "Trials",
+          "type": "integer"
+        },
+        "mocked": {
+          "title": "Mocked",
+          "type": "boolean"
+        },
+        "outcome": {
+          "enum": [
+            "pending",
+            "pass",
+            "fail",
+            "inconclusive"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "prior": {
+          "$ref": "#/$defs/BetaBelief"
+        },
+        "posterior": {
+          "$ref": "#/$defs/BetaBelief"
+        },
+        "output_before": {
+          "$ref": "#/$defs/OutputRange"
+        },
+        "output_after": {
+          "$ref": "#/$defs/OutputRange"
+        },
+        "p_viable_before": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P Viable Before",
+          "type": "number"
+        },
+        "p_viable_after": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P Viable After",
+          "type": "number"
+        },
+        "verdict_before": {
+          "enum": [
+            "continue",
+            "pivot",
+            "kill"
+          ],
+          "title": "Verdict Before",
+          "type": "string"
+        },
+        "verdict_after": {
+          "enum": [
+            "continue",
+            "pivot",
+            "kill"
+          ],
+          "title": "Verdict After",
+          "type": "string"
+        },
+        "rank_before": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Rank Before",
+          "type": "array"
+        },
+        "rank_after": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Rank After",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "run_id",
+        "created_at",
+        "experiment_id",
+        "claim_id",
+        "observation_claim_id",
+        "successes",
+        "trials",
+        "mocked",
+        "outcome",
+        "prior",
+        "posterior",
+        "output_before",
+        "output_after",
+        "p_viable_before",
+        "p_viable_after",
+        "verdict_before",
+        "verdict_after",
+        "rank_before",
+        "rank_after"
+      ],
+      "title": "UpdateEvent",
+      "type": "object"
     }
   },
-  "title": "Lab-to-Market contract v1"
+  "title": "Lab-to-Market contract v2"
 }

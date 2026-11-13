@@ -1,0 +1,173 @@
+[
+  {
+    "id": "eval-8845354c-E1.1-pipeline",
+    "created_at": "2026-11-13T08:47:53.096442Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E1.1",
+    "system": "pipeline",
+    "metrics": {
+      "match": 1.0
+    },
+    "passed": true,
+    "notes": "clear pass: 8 of 10 on x1; expected continue, pipeline continue",
+    "latency_s": 0.397,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E1.2-pipeline",
+    "created_at": "2026-11-13T08:47:53.427349Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E1.2",
+    "system": "pipeline",
+    "metrics": {
+      "match": 1.0
+    },
+    "passed": true,
+    "notes": "clear fail (pivot rule): 2 of 10 on x1; expected pivot, pipeline pivot",
+    "latency_s": 0.331,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E1.3-pipeline",
+    "created_at": "2026-11-13T08:47:53.801256Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E1.3",
+    "system": "pipeline",
+    "metrics": {
+      "match": 1.0
+    },
+    "passed": true,
+    "notes": "borderline: exactly the pass count: 5 of 10 on x1; expected continue, pipeline continue",
+    "latency_s": 0.374,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E1.4-pipeline",
+    "created_at": "2026-11-13T08:47:54.193716Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E1.4",
+    "system": "pipeline",
+    "metrics": {
+      "match": 1.0
+    },
+    "passed": true,
+    "notes": "borderline: exactly the fail line, inconclusive: 3 of 10 on x1; expected kill, pipeline kill",
+    "latency_s": 0.392,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E1.5-pipeline",
+    "created_at": "2026-11-13T08:47:54.472588Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E1.5",
+    "system": "pipeline",
+    "metrics": {
+      "match": 1.0
+    },
+    "passed": true,
+    "notes": "clear fail (kill rule): 0 of 20 on x3; expected kill, pipeline kill",
+    "latency_s": 0.279,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E1.6-pipeline",
+    "created_at": "2026-11-13T08:47:54.835397Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E1.6",
+    "system": "pipeline",
+    "metrics": {
+      "match": 1.0
+    },
+    "passed": true,
+    "notes": "partial sample that can no longer reach the fail line: 1 of 8 on x2; expected kill, pipeline kill",
+    "latency_s": 0.363,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E2.1-pipeline",
+    "created_at": "2026-11-13T08:48:25.196277Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E2.1",
+    "system": "pipeline",
+    "metrics": {
+      "cases": 585.0,
+      "violations": 0.0
+    },
+    "passed": true,
+    "notes": "Results below the current estimate never raise the tested share's median.",
+    "latency_s": 30.36,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E2.2-pipeline",
+    "created_at": "2026-11-13T08:48:25.196368Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E2.2",
+    "system": "pipeline",
+    "metrics": {
+      "cases": 585.0,
+      "violations": 0.0
+    },
+    "passed": true,
+    "notes": "Results below the current estimate never raise expected revenue (product of driver means).",
+    "latency_s": 30.36,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E2.3-pipeline",
+    "created_at": "2026-11-13T08:48:25.196374Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E2.3",
+    "system": "pipeline",
+    "metrics": {
+      "cases": 585.0,
+      "p50_rises": 42.0,
+      "worst_relative_rise": 0.2825
+    },
+    "passed": null,
+    "notes": "Honest finding, not a pass/fail check: the output's P50 can still rise when a result mainly removes uncertainty (the median of a product of skewed factors grows as their spread shrinks).",
+    "latency_s": 30.36,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E3-pipeline",
+    "created_at": "2026-11-13T08:48:25.860235Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E3",
+    "system": "pipeline",
+    "metrics": {
+      "data_weight_n2": 0.168,
+      "data_weight_n20": 0.669
+    },
+    "passed": true,
+    "notes": "Two trials carry less weight in the posterior than twenty at the same rate.",
+    "latency_s": 0.664,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E4-pipeline",
+    "created_at": "2026-11-13T08:48:26.429833Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E4",
+    "system": "pipeline",
+    "metrics": {
+      "belief_moved_up": 1.0
+    },
+    "passed": true,
+    "notes": "A decided rule stays decided after an opposite batch; the belief still learns from it.",
+    "latency_s": 0.57,
+    "cost_eur": null
+  },
+  {
+    "id": "eval-8845354c-E5-pipeline",
+    "created_at": "2026-11-13T08:48:27.157521Z",
+    "eval_run_id": "eval-8845354c",
+    "case_id": "E5",
+    "system": "pipeline",
+    "metrics": {},
+    "passed": true,
+    "notes": "Same inputs give identical outputs (seed 42, fixed draws).",
+    "latency_s": 0.728,
+    "cost_eur": null
+  }
+]

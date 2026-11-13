@@ -1,12 +1,16 @@
 {
   "run": {
     "id": "demo-refused",
-    "schema_version": 1,
+    "schema_version": 2,
     "created_at": "2026-11-12T18:20:00Z",
     "updated_at": "2026-11-12T18:20:06Z",
     "status": "refused",
     "idea_text": "A drone that follows specific people at protests and sends their face images to private clients.",
-    "context": { "sector": null, "region": null, "trl": null },
+    "context": {
+      "sector": null,
+      "region": null,
+      "trl": null
+    },
     "scope": {
       "verdict": "refuse",
       "reasons": [
@@ -21,9 +25,18 @@
     "error": null
   },
   "steps": [
-    { "id": "st1", "run_id": "demo-refused", "name": "scoping", "status": "done", "message": "Refused: harmful or dual-use", "started_at": "2026-11-12T18:20:00Z", "finished_at": "2026-11-12T18:20:06Z" }
+    {
+      "id": "st1",
+      "run_id": "demo-refused",
+      "name": "scoping",
+      "status": "done",
+      "message": "Refused: harmful or dual-use",
+      "started_at": "2026-11-12T18:20:00Z",
+      "finished_at": "2026-11-12T18:20:06Z"
+    }
   ],
   "sources": [],
   "claims": [],
-  "experiments": []
+  "experiments": [],
+  "updates": []
 }

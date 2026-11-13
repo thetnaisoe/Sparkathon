@@ -1,11 +1,15 @@
 """Shared contract between the backend and the Lovable app.
 
 These Pydantic models are the single source of truth. To change them: message
-Dev A first, bump SCHEMA_VERSION, regenerate fixtures/schema.json and update
-fixtures/*.json in the same commit.
+Dev A first, bump SCHEMA_VERSION, run scripts/build_fixtures.py and
+scripts/export_contract.py, and commit the regenerated files together.
 
 The label rules ("code, not the model, enforces the label") live in the
 validators below, so nothing that breaks them can be stored or served.
+
+v2 adds the learning loop: each experiment carries a rule fixed in advance
+("k of n"), results update the tested assumption, and a Decision (continue,
+pivot or kill) is computed by code from those rules.
 """
 
 from __future__ import annotations
@@ -16,7 +20,7 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 RunStatus = Literal[
     "queued",
@@ -38,7 +42,8 @@ StepName = Literal[
 StepStatus = Literal["running", "done", "failed", "skipped"]
 ClaimType = Literal["fact", "estimate", "assumption"]
 ClaimStatus = Literal["verified", "unverified"]
-ClaimOrigin = Literal["research", "user", "model"]
+# experiment = a result the team typed in after running an experiment (we cannot verify it)
+ClaimOrigin = Literal["research", "user", "model", "experiment"]
 CredibilityTier = Literal[
     "government", "peer_reviewed", "industry_report", "company_page", "blog", "unknown"
 ]
@@ -54,7 +59,15 @@ ExperimentMethod = Literal[
     "regulatory_expert_call",
 ]
 ExperimentStatus = Literal["proposed", "accepted", "edited", "rejected"]
+RuleOutcome = Literal["pending", "pass", "fail", "inconclusive"]
+FailAction = Literal["pivot", "kill"]
+Verdict = Literal["continue", "pivot", "kill"]
 EvalSystem = Literal["pipeline", "baseline", "analyst"]
+
+# Drivers that are shares of a population (0..1). Only these can be tested with a
+# "k of n" experiment and updated with a Beta-Binomial model.
+PROPORTION_DRIVERS: tuple[str, ...] = ("share_need_budget", "adoption_rate", "achievable_share")
+MAGNITUDE_DRIVERS: tuple[str, ...] = ("n_target_orgs", "price_per_org")
 
 # Evidence rules (starting values from the build plan; tune later).
 ASSUMPTION_MAX_STRENGTH = 0.25
@@ -79,6 +92,16 @@ def claim_refs(text: str) -> list[str]:
 def find_orphan_numbers(text: str) -> list[str]:
     """Numbers in `text` that do not come from a {{claim_id}} reference."""
     return _NUMBER.findall(CLAIM_REF.sub("", text))
+
+
+def _check_range(p10: Optional[float], p50: Optional[float], p90: Optional[float]) -> bool:
+    """Validate an optional P10/P50/P90 triple. Returns True if all three are set."""
+    given = [b is not None for b in (p10, p50, p90)]
+    if any(given) and not all(given):
+        raise ValueError("give all of p10, p50 and p90, or none")
+    if all(given) and not (p10 <= p50 <= p90):
+        raise ValueError("need p10 <= p50 <= p90")
+    return all(given)
 
 
 class Contract(BaseModel):
@@ -129,12 +152,29 @@ class ScopeResult(Contract):
 
 
 class DraftAssumption(Contract):
-    """An assumption proposed at Gate 1. The user can edit or untick it."""
+    """An assumption proposed at Gate 1. The user can edit it; non-driver ones can be unticked.
+
+    Assumptions with a `driver` are market-model inputs and must stay included.
+    """
 
     id: str
     text: str
     driver: Optional[DriverKey] = None
     included: bool = True
+    unit: Optional[str] = None
+    p10: Optional[float] = None
+    p50: Optional[float] = None
+    p90: Optional[float] = None
+
+    @model_validator(mode="after")
+    def _range(self) -> DraftAssumption:
+        has_range = _check_range(self.p10, self.p50, self.p90)
+        if self.driver is not None:
+            if not has_range:
+                raise ValueError("a driver assumption needs p10, p50 and p90")
+            if not self.included:
+                raise ValueError("a driver assumption is a model input and cannot be excluded")
+        return self
 
 
 class Interpretation(Contract):
@@ -217,34 +257,63 @@ class Claim(Contract):
         if self.type == "assumption" and self.evidence_strength > ASSUMPTION_MAX_STRENGTH:
             raise ValueError(f"an assumption's evidence_strength is at most {ASSUMPTION_MAX_STRENGTH}")
 
-        if self.origin == "user" and self.type != "assumption":
-            raise ValueError("figures supplied by the user are always assumptions")
+        if self.origin in ("user", "experiment") and self.type != "assumption":
+            raise ValueError("figures entered by the user or the team are always assumptions")
 
-        bounds = (self.p10, self.p50, self.p90)
-        given = [b is not None for b in bounds]
-        if any(given) and not all(given):
-            raise ValueError("give all of p10, p50 and p90, or none")
-        if (self.type == "estimate" or self.driver is not None) and not all(given):
+        has_range = _check_range(self.p10, self.p50, self.p90)
+        if (self.type == "estimate" or self.driver is not None) and not has_range:
             raise ValueError("estimates and model drivers need p10, p50 and p90")
-        if all(given) and not (self.p10 <= self.p50 <= self.p90):
-            raise ValueError("need p10 <= p50 <= p90")
+        if self.driver in PROPORTION_DRIVERS and has_range and not (0 <= self.p10 and self.p90 <= 1):
+            raise ValueError(f"{self.driver} is a share and must lie between 0 and 1")
+        return self
+
+
+class ExperimentRule(Contract):
+    """Decision rule fixed in advance (locked at Gate 2) and evaluated by code.
+
+    With the planned number of trials: pass if successes >= pass_at_least,
+    fail if successes < fail_below, otherwise inconclusive.
+    """
+
+    trials: int = Field(ge=1, le=10000)
+    pass_at_least: int = Field(ge=1)
+    fail_below: int = Field(ge=1)
+    on_fail: FailAction = "kill"
+
+    @model_validator(mode="after")
+    def _ordered(self) -> ExperimentRule:
+        if not (self.fail_below <= self.pass_at_least <= self.trials):
+            raise ValueError("need fail_below <= pass_at_least <= trials")
         return self
 
 
 class Experiment(Contract):
     id: str
     run_id: str
-    assumption_id: str
+    assumption_id: str  # the proportion-driver claim this experiment tests
     hypothesis: str
     method: ExperimentMethod
     metric: str
-    pass_threshold: str
-    kill_criterion: str
+    rule: ExperimentRule
+    pass_threshold: str  # written by code from `rule`
+    kill_criterion: str  # written by code from `rule`
     effort_days: float = Field(ge=0)
     cost_eur: float = Field(ge=0)
-    updates_claim_ids: list[str] = Field(default_factory=list)  # estimates this experiment would update
+    updates_claim_ids: list[str] = Field(default_factory=list)  # claims this experiment would update
     priority: float = Field(ge=0, le=1)  # normalised swing x (1 - evidence_strength)
     status: ExperimentStatus = "proposed"
+    locked_at: Optional[datetime] = None  # set at Gate 2; the rule cannot change afterwards
+    successes: int = Field(default=0, ge=0)  # cumulative results entered so far
+    trials_done: int = Field(default=0, ge=0)
+    outcome: RuleOutcome = "pending"
+    decision_flip_prob: Optional[float] = Field(default=None, ge=0, le=1)  # chance the next result changes the verdict
+    rank: Optional[int] = Field(default=None, ge=1)  # 1 = run next; None when finished or rejected
+
+    @model_validator(mode="after")
+    def _counts(self) -> Experiment:
+        if self.successes > self.trials_done:
+            raise ValueError("successes cannot exceed trials_done")
+        return self
 
 
 # --------------------------------------------------------------------------- assessment
@@ -294,10 +363,21 @@ class ReportSection(Contract):
         return self
 
 
+class Decision(Contract):
+    """The verdict, computed by code from the rules fixed in advance. Never by the model."""
+
+    verdict: Verdict
+    provisional: bool  # true until the first experiment result is entered
+    reasons: list[str] = Field(min_length=1)  # which rules fired, in plain words
+    viability_threshold: float = Field(gt=0)  # same unit as the output; continue only if P50 >= this
+    p_viable: float = Field(ge=0, le=1)  # share of Monte Carlo draws at or above the threshold
+
+
 class Assessment(Contract):
     evidence_floor_met: bool
     headline: Optional[str] = None  # None when the evidence floor is not met
     market_model: Optional[MarketModel] = None  # None when no model was built (e.g. infeasible)
+    decision: Optional[Decision] = None  # None when no model was built
     sections: list[ReportSection] = Field(default_factory=list)
     cannot_determine: list[str] = Field(default_factory=list)
     data_needed: list[str] = Field(default_factory=list)  # filled when the floor is not met
@@ -313,7 +393,53 @@ class Assessment(Contract):
                 raise ValueError("list the data needed when the evidence floor is not met")
         if self.headline is not None and find_orphan_numbers(self.headline):
             raise ValueError("headline numbers must come from claims via {{claim_id}}")
+        if (self.market_model is None) != (self.decision is None):
+            raise ValueError("decision and market_model come together")
         return self
+
+
+# --------------------------------------------------------------------------- learning loop
+
+
+class BetaBelief(Contract):
+    """Belief about a share, as a Beta(alpha, beta) distribution and its quantiles."""
+
+    alpha: float = Field(gt=0)
+    beta: float = Field(gt=0)
+    p10: float = Field(ge=0, le=1)
+    p50: float = Field(ge=0, le=1)
+    p90: float = Field(ge=0, le=1)
+
+
+class OutputRange(Contract):
+    p10: float
+    p50: float
+    p90: float
+
+
+class UpdateEvent(Contract):
+    """One entered result: prior -> evidence -> posterior, and what it changed."""
+
+    id: str
+    run_id: str
+    created_at: datetime
+    experiment_id: str
+    claim_id: str  # the driver claim that was updated
+    observation_claim_id: str  # the claim holding the entered result
+    successes: int = Field(ge=0)
+    trials: int = Field(ge=1)
+    mocked: bool
+    outcome: RuleOutcome  # the experiment's rule outcome after this result (all results so far)
+    prior: BetaBelief
+    posterior: BetaBelief
+    output_before: OutputRange
+    output_after: OutputRange
+    p_viable_before: float = Field(ge=0, le=1)
+    p_viable_after: float = Field(ge=0, le=1)
+    verdict_before: Verdict
+    verdict_after: Verdict
+    rank_before: list[str]  # open experiment ids, best first
+    rank_after: list[str]
 
 
 # --------------------------------------------------------------------------- run
@@ -354,6 +480,7 @@ class RunState(Contract):
     sources: list[Source] = Field(default_factory=list)
     claims: list[Claim] = Field(default_factory=list)
     experiments: list[Experiment] = Field(default_factory=list)
+    updates: list[UpdateEvent] = Field(default_factory=list)  # oldest first
 
     @model_validator(mode="after")
     def _references(self) -> RunState:
@@ -363,6 +490,7 @@ class RunState(Contract):
             ("source", self.sources),
             ("claim", self.claims),
             ("experiment", self.experiments),
+            ("update", self.updates),
         ):
             ids = [row.id for row in rows]
             if len(ids) != len(set(ids)):
@@ -373,6 +501,11 @@ class RunState(Contract):
 
         sources = {s.id: s for s in self.sources}
         claims = {c.id: c for c in self.claims}
+        experiments = {x.id: x for x in self.experiments}
+
+        drivers = [c.driver for c in self.claims if c.driver is not None]
+        if len(drivers) != len(set(drivers)):
+            raise ValueError("each market-model driver must belong to exactly one claim")
 
         for c in self.claims:
             if c.source_id is not None and c.source_id not in sources:
@@ -394,11 +527,20 @@ class RunState(Contract):
 
         for x in self.experiments:
             target = claims.get(x.assumption_id)
-            if target is None or target.type != "assumption":
-                raise ValueError(f"experiment {x.id} must target an assumption claim")
+            if target is None or target.driver not in PROPORTION_DRIVERS or target.type == "fact":
+                raise ValueError(
+                    f"experiment {x.id} must test a share driver (assumption or updated estimate)"
+                )
             for ref in x.updates_claim_ids:
                 if ref not in claims:
                     raise ValueError(f"experiment {x.id} updates unknown claim {ref}")
+
+        for u in self.updates:
+            if u.experiment_id not in experiments:
+                raise ValueError(f"update {u.id} refers to unknown experiment {u.experiment_id}")
+            for ref in (u.claim_id, u.observation_claim_id):
+                if ref not in claims:
+                    raise ValueError(f"update {u.id} refers to unknown claim {ref}")
 
         a = self.run.assessment
         if a is not None:
@@ -419,7 +561,7 @@ class RunState(Contract):
         return self
 
 
-# --------------------------------------------------------------------------- gates
+# --------------------------------------------------------------------------- gates and results
 
 
 class ExperimentDecision(Contract):
@@ -428,12 +570,11 @@ class ExperimentDecision(Contract):
     # Only for decision == "edit"; omitted fields stay unchanged.
     hypothesis: Optional[str] = None
     metric: Optional[str] = None
-    pass_threshold: Optional[str] = None
-    kill_criterion: Optional[str] = None
+    rule: Optional[ExperimentRule] = None
 
     @model_validator(mode="after")
     def _edit_has_changes(self) -> ExperimentDecision:
-        edits = (self.hypothesis, self.metric, self.pass_threshold, self.kill_criterion)
+        edits = (self.hypothesis, self.metric, self.rule)
         if self.decision == "edit" and all(e is None for e in edits):
             raise ValueError("an edit decision must change at least one field")
         if self.decision != "edit" and any(e is not None for e in edits):
@@ -449,11 +590,12 @@ class ApproveRequest(Contract):
     note: Optional[str] = None
     interpretation: Optional[Interpretation] = None  # gate 1: the (edited) interpretation
     decisions: list[ExperimentDecision] = Field(default_factory=list)  # gate 2
+    viability_threshold: Optional[float] = Field(default=None, gt=0)  # gate 2: optional edit
 
     @model_validator(mode="after")
     def _payload_matches_gate(self) -> ApproveRequest:
         if self.gate == 1:
-            if self.decisions:
+            if self.decisions or self.viability_threshold is not None:
                 raise ValueError("gate 1 takes an interpretation, not experiment decisions")
             if self.approved and self.interpretation is None:
                 raise ValueError("approving gate 1 requires the interpretation")
@@ -462,6 +604,22 @@ class ApproveRequest(Contract):
                 raise ValueError("gate 2 takes experiment decisions, not an interpretation")
             if self.approved and not self.decisions:
                 raise ValueError("approving gate 2 requires a decision for each experiment")
+        return self
+
+
+class ResultCreate(Contract):
+    """Body of POST /runs/{id}/results: the outcome of running one experiment."""
+
+    experiment_id: str
+    successes: int = Field(ge=0)
+    trials: int = Field(ge=1, le=10000)
+    mocked: bool  # required: say whether this is a real result or a demo value
+    note: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _counts(self) -> ResultCreate:
+        if self.successes > self.trials:
+            raise ValueError("successes cannot exceed trials")
         return self
 
 
