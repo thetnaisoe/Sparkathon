@@ -61,6 +61,14 @@ _OPENAI_FORMAT_HINTS = ("response_format", "json_schema", "json_object", "schema
 _CONTENT_FILTER_HINTS = ("content_filter", "responsibleaipolicyviolation", "content management policy")
 
 
+def _max_retries() -> int:
+    """SDK retries for 429/5xx with exponential backoff: LLM_MAX_RETRIES, else 2 (0..10)."""
+    try:
+        return min(max(int(os.getenv("LLM_MAX_RETRIES", str(MAX_RETRIES))), 0), 10)
+    except ValueError:
+        return MAX_RETRIES
+
+
 def _timeout(override: Optional[float] = None) -> float:
     """Per-attempt timeout: explicit argument, else LLM_TIMEOUT_S, else 60 s (minimum 5 s)."""
     if override is not None:
@@ -134,7 +142,7 @@ class AnthropicProvider:
         self.model = model or ANTHROPIC_DEFAULT_MODEL
         self.max_tokens = max_tokens
         self.client = client or anthropic.Anthropic(
-            api_key=api_key, base_url=base_url, max_retries=MAX_RETRIES, timeout=_timeout(timeout)
+            api_key=api_key, base_url=base_url, max_retries=_max_retries(), timeout=_timeout(timeout)
         )
         if fallbacks is None:
             fallbacks = os.getenv("LLM_ANTHROPIC_FALLBACKS", "1").strip().lower() not in {"0", "false", "no", "off"}
@@ -289,7 +297,7 @@ class OpenAICompatibleProvider:
         self.name = name
         self.model = model
         self.client = client or openai.OpenAI(
-            api_key=api_key, base_url=base_url, max_retries=MAX_RETRIES, timeout=_timeout(timeout)
+            api_key=api_key, base_url=base_url, max_retries=_max_retries(), timeout=_timeout(timeout)
         )
         self.mode = self.MODES[0]
 

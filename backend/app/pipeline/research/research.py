@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 import math
+import os
 import re
 import time
 from collections.abc import Callable, Iterable
@@ -35,7 +36,14 @@ FETCH_WORKERS = 6
 SEARCH_WORKERS = 6
 PASSAGES_PER_DRIVER = 6
 MAX_CANDIDATES = 8
-LLM_WORKERS = 4
+LLM_WORKERS = 4  # default; RESEARCH_LLM_WORKERS overrides it (use 1 on rate-limited free tiers)
+
+
+def _llm_workers() -> int:
+    try:
+        return min(max(int(os.getenv("RESEARCH_LLM_WORKERS", str(LLM_WORKERS))), 1), 8)
+    except ValueError:
+        return LLM_WORKERS
 MIN_LLM_SECONDS = 2.0  # do not start an LLM phase with less time than this left
 MIN_SPREAD = 1.2  # high multiplier must be at least this times the low one
 
@@ -474,7 +482,7 @@ def _llm_phase(
         return []
     if remaining() < MIN_LLM_SECONDS:
         return [(None, None, False)] * n
-    return _parallel(call, list(range(n)), LLM_WORKERS, remaining())
+    return _parallel(call, list(range(n)), _llm_workers(), remaining())
 
 
 def _extraction_prompt(interpretation: Interpretation, job: _DriverJob, docs: dict[str, _FetchedDoc]) -> str:
